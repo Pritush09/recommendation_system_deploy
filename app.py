@@ -5,23 +5,36 @@ import os
 from dotenv import load_dotenv
 import gdown
 
+# Setting page layout
+st.set_page_config(
+    page_title="Movie Recommendation System",  # Setting page title
+    layout="wide",      # Setting layout to wide
+)
+
+st.header('Movie Recommender System')
+st.caption("Based on the OG NLP techniques rather than just a LLM")
+st.caption('It may tak 1-2 mintues to load wait as something OG is being loaded')
+
+
 # Load environment variables
 load_dotenv()
 
-movie_file_id = os.getenv("MOVIES_PKL_ID")
+# movie_file_id = os.getenv("MOVIES_PKL_ID")
+movie_file_id = st.secrets["MOVIES_PKL_ID"]
 movie_url = f"https://drive.google.com/uc?id={movie_file_id}"
 
-similarity_file_id = os.getenv("SIMILARITY_PKL_ID")
+# similarity_file_id = os.getenv("SIMILARITY_PKL_ID")
+similarity_file_id = st.secrets["SIMILARITY_PKL_ID"]
 similarity_url = f"https://drive.google.com/uc?id={similarity_file_id}"
 
 movie = "movies.pkl"
 similarity = "similarity.pkl"
 
-if not os.path.exists(movie):
-    gdown.download(similarity_url, movie, quiet=False)
-
 if not os.path.exists(similarity):
-    gdown.download(movie_url, similarity, quiet=False)
+    gdown.download(similarity_url, similarity, quiet=False)
+
+if not os.path.exists(movie):
+    gdown.download(movie_url, movie, quiet=False)
 
 def fetch_poster(movie_id):
     url = "https://api.themoviedb.org/3/movie/{}?api_key=8265bd1679663a7ea12ac168da84d2e8&language=en-US".format(movie_id)
@@ -45,9 +58,12 @@ def recommend(movie):
     return recommended_movie_names,recommended_movie_posters
 
 
-st.header('Movie Recommender System')
-movies = pickle.load(open('movies.pkl','rb'))
+with open("movies.pkl", "rb") as f:
+    movies = pickle.load(f)
+
 similarity = pickle.load(open('similarity.pkl','rb'))
+
+# print(type(movies))
 
 movie_list = movies['title'].values
 selected_movie = st.selectbox(
