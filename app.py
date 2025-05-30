@@ -1,6 +1,27 @@
 import pickle
 import streamlit as st
 import requests
+import os
+from dotenv import load_dotenv
+import gdown
+
+# Load environment variables
+load_dotenv()
+
+movie_file_id = os.getenv("MOVIES_PKL_ID")
+movie_url = f"https://drive.google.com/uc?id={movie_file_id}"
+
+similarity_file_id = os.getenv("SIMILARITY_PKL_ID")
+similarity_url = f"https://drive.google.com/uc?id={similarity_file_id}"
+
+movie = "movies.pkl"
+similarity = "similarity.pkl"
+
+if not os.path.exists(movie):
+    gdown.download(similarity_url, movie, quiet=False)
+
+if not os.path.exists(similarity):
+    gdown.download(movie_url, similarity, quiet=False)
 
 def fetch_poster(movie_id):
     url = "https://api.themoviedb.org/3/movie/{}?api_key=8265bd1679663a7ea12ac168da84d2e8&language=en-US".format(movie_id)
